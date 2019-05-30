@@ -37,12 +37,36 @@ function refresh_graph(day) {
         while (scatterChart.data.datasets.length > 0) {
             scatterChart.data.datasets.pop();
         }
-        
+        var xmin = data[0].x;
+        var xmax = data[data.length - 1].x;
+        console.log(xmin, xmax);
+        scatterChart.data.datasets.push({
+            data: [
+                {x: xmin, y: 2.0,},
+                {x: xmax, y: 2.0,},
+            ],
+            borderColor: '#f00',
+            borderWidth: 1,
+            showLine: true,
+            fill: false,
+            tooltip: false,
+        });
+        scatterChart.data.datasets.push({
+            data: [
+                {x: xmin, y: 8.0,},
+                {x: xmax, y: 8.0,},
+            ],
+            borderColor: '#f00',
+            borderWidth: 1,
+            showLine: true,
+            fill: false,
+            tooltip: false,
+        });
 		scatterChart.data.datasets.push({
             label:"Historia temperatury", 
             data:data,
             borderColor: 'blue',
-            borderWidth: 1,
+            borderWidth: 2,
             showLine: true,
             fill: false
             });
