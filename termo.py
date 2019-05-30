@@ -6,9 +6,11 @@ import configparser
 
 config = configparser.ConfigParser()
 sensor = w1thermsensor.W1ThermSensor()
-lastError = 0;
+lastAlert = datetime.datetime.fromtimestamp(0);
+
 
 ROW = '{0:.4f};{1}\r\n'
+
 
 
 #file management
@@ -85,14 +87,23 @@ def check_alert(temperature, tmin, tmax, dev):
     with open(fNameAlerts, 'a') as alertFile:
         info = '{1:.1f};{0}\r\n'.format(datetime.datetime.now(), temperature)
         alertFile.write(info)
+    global lastAlert
+    lastAlert = send_alert(temperature, lastAlert)
     return True
+
+
+def send_alert(temp, lastAlert):
+    config.read('termo.conf')
+    cAlerts = config['ALERTS']
+    cooldown = cAlerts.getint('cooldown', 0)
+    now = datetime.datetime.now()
+    if (now - lastAlert).total_seconds() < cooldown:
+        return lastAlert
+    recipients = cAlerts['recipients']
+    cmd = './alert.sh "{0:.2f}" "{1}" "{2}"'.format(temp, now, recipients)
+    os.system(cmd)
+    return now
+
 
 while True:
     generate_line()
-
-def send_alert(temp):
-    config.read('termo.conf')
-    cAlerts = config['ALERTS']
-    recipients = cAlerts['recipients']
-    cmd = './alert.sh "{0:.2f}" "{1}" "{2}"'.format(temp, datetime.datetime.now(), recipients);
-    os.system(cmd)
