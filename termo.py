@@ -6,6 +6,7 @@ import configparser
 
 config = configparser.ConfigParser()
 sensor = w1thermsensor.W1ThermSensor()
+lastError = 0;
 
 ROW = '{0:.4f};{1}\r\n'
 
@@ -88,3 +89,10 @@ def check_alert(temperature, tmin, tmax, dev):
 
 while True:
     generate_line()
+
+def send_alert(temp):
+    config.read('termo.conf')
+    cAlerts = config['ALERTS']
+    recipients = cAlerts['recipients']
+    cmd = './alert.sh "{0:.2f}" "{1}" "{2}"'.format(temp, datetime.datetime.now(), recipients);
+    os.system(cmd)
