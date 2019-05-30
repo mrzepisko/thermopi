@@ -7,7 +7,7 @@ import configparser
 config = configparser.ConfigParser()
 sensor = w1thermsensor.W1ThermSensor()
 
-ROW = '{0:.4f};{1};\r\n'
+ROW = '{0:.4f};{1}\r\n'
 
 
 #file management
@@ -82,7 +82,7 @@ def check_alert(temperature, tmin, tmax, dev):
         return False
     #invalid temperature!
     with open(fNameAlerts, 'a') as alertFile:
-        info = '{1:.1f};{0};\r\n'.format(datetime.datetime.now(), temperature)
+        info = '{1:.1f};{0}\r\n'.format(datetime.datetime.now(), temperature)
         alertFile.write(info)
     return True
 
